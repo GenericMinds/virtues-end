@@ -36,18 +36,11 @@ namespace Server.Misc
 			EventSink.CharacterCreated += EventSink_CharacterCreated;
 		}
 
-		public static bool VerifyProfession(int profession)
-		{
-			if (profession < 0)
-				return false;
-			if (profession < 4)
-				return true;
-			if (Core.AOS && profession < 6)
-				return true;
-			if (Core.SE && profession < 8)
-				return true;
-			return false;
-		}
+        // TODO: determine if this is needed
+		public static bool VerifyProfession(ProfessionName profession)
+        {
+            return profession >= 0;
+        }
 
 		private static void AddBackpack(Mobile m)
 		{
@@ -166,7 +159,7 @@ namespace Server.Misc
 		private static void EventSink_CharacterCreated(CharacterCreatedEventArgs args)
 		{
 			if (!VerifyProfession(args.Profession))
-				args.Profession = 0;
+				args.Profession = ProfessionName.Ruffian;
 
 			var state = args.State;
 
@@ -216,7 +209,7 @@ namespace Server.Misc
 						pm.Skills[i].Cap = skillcap;
 				}
 
-				pm.Profession = args.Profession;
+				pm.Profession = (int) args.Profession;
 
 				if (pm.IsPlayer() && pm.Account.Young && !Siege.SiegeShard)
 					young = pm.Young = true;
@@ -256,12 +249,9 @@ namespace Server.Misc
 				newChar.FaceHue = newChar.Hue;
 			}
 
-			if (args.Profession <= 3)
-			{
-				AddShirt(newChar, args.ShirtHue);
-				AddPants(newChar, args.PantsHue);
-				AddShoes(newChar);
-			}
+			AddShirt(newChar, args.ShirtHue);
+			AddPants(newChar, args.PantsHue);
+			AddShoes(newChar);
 
 			if (TestCenter.Enabled)
 				TestCenter.FillBankbox(newChar);
@@ -386,40 +376,39 @@ namespace Server.Misc
 			return total == 60;
 		}
 
-        private static void SetStats(Mobile m, int prof, int str, int dex, int intel)
+        private static void SetStats(Mobile m, ProfessionName prof, int str, int dex, int intel)
         {
-            // TODO: update stats
             switch (prof)
             {
-                case 1: // Fighter
+                case ProfessionName.Fighter:
                     {
                         str = 35;
                         dex = 25;
                         intel = 10;
                         break;
                     }
-                case 2: // Ruffian
+                case ProfessionName.Ruffian:
                     {
                         str = 25;
                         dex = 35;
                         intel = 10;
                         break;
                     }
-                case 3: // Hunter
+                case ProfessionName.Hunter:
                     {
                         str = 20;
                         dex = 35;
                         intel = 15;
                         break;
                     }
-                case 4: // Student
+                case ProfessionName.Student:
                     {
                         str = 10;
                         dex = 25;
                         intel = 35;
                         break;
                     }
-                case 5: // Blacksmith
+                case ProfessionName.Blacksmith:
                     {
                         str = 40;
                         dex = 15;
@@ -437,11 +426,11 @@ namespace Server.Misc
             m.InitStats(str, dex, intel);
         }
 
-		private static void SetSkills(Mobile m, SkillNameValue[] skills, int prof)
+		private static void SetSkills(Mobile m, SkillNameValue[] skills, ProfessionName prof)
 		{
 			switch (prof)
 			{
-				case 1: // Fighter
+				case ProfessionName.Fighter:
 				{
 					skills = new[]
 					{
@@ -451,7 +440,7 @@ namespace Server.Misc
 
 					break;
 				}
-                case 2: // Ruffian
+                case ProfessionName.Ruffian:
                 {
                     skills = new[]
                     {
@@ -460,7 +449,7 @@ namespace Server.Misc
                     };
                     break;
                 }
-                case 3: // Hunter
+                case ProfessionName.Hunter:
                 {
                     skills = new[]
                     {
@@ -469,8 +458,8 @@ namespace Server.Misc
                     };
                     break;
                 }
-				case 4: // Student
-				{
+				case ProfessionName.Student:
+                {
 					skills = new[]
 					{
 						new SkillNameValue(SkillName.EvalInt, 15), new SkillNameValue(SkillName.Wrestling, 15),
@@ -479,7 +468,7 @@ namespace Server.Misc
 
 					break;
 				}
-				case 5: // Blacksmith
+				case ProfessionName.Blacksmith:
 				{
 					skills = new[]
 					{
@@ -505,7 +494,7 @@ namespace Server.Misc
 
 			switch (prof)
 			{
-				case 1: // Warrior
+				case ProfessionName.Fighter:
 				{
 					if (elf)
 						EquipItem(new LeafChest());
@@ -524,17 +513,18 @@ namespace Server.Misc
 			{
 				var snv = skills[i];
 
-				if (snv.Value > 0 && (snv.Name != SkillName.Stealth || prof == 7) && snv.Name != SkillName.RemoveTrap &&
-					snv.Name != SkillName.Spellweaving)
+				if (snv.Value > 0 && snv.Name != SkillName.Stealth && snv.Name != SkillName.RemoveTrap && snv.Name != SkillName.Spellweaving)
 				{
 					var skill = m.Skills[snv.Name];
 
-					if (skill != null)
-					{
-						skill.BaseFixedPoint = snv.Value * 10;
+                    if (skill == null)
+                    {
+                        continue;
+                    }
 
-                        AddSkillItems(snv.Name, m);
-					}
+					skill.BaseFixedPoint = snv.Value * 10;
+
+                    AddSkillItems(snv.Name, m);
 				}
 			}
 		}
@@ -596,92 +586,6 @@ namespace Server.Misc
 					PackItem(new TambourineTassel());
 					break;
 			}
-		}
-
-		private static void PackScroll(int circle)
-		{
-			switch (Utility.Random(8) * (circle + 1))
-			{
-				case 0:
-					PackItem(new ClumsyScroll());
-					break;
-				case 1:
-					PackItem(new CreateFoodScroll());
-					break;
-				case 2:
-					PackItem(new FeeblemindScroll());
-					break;
-				case 3:
-					PackItem(new HealScroll());
-					break;
-				case 4:
-					PackItem(new MagicArrowScroll());
-					break;
-				case 5:
-					PackItem(new NightSightScroll());
-					break;
-				case 6:
-					PackItem(new ReactiveArmorScroll());
-					break;
-				case 7:
-					PackItem(new WeakenScroll());
-					break;
-				case 8:
-					PackItem(new AgilityScroll());
-					break;
-				case 9:
-					PackItem(new CunningScroll());
-					break;
-				case 10:
-					PackItem(new CureScroll());
-					break;
-				case 11:
-					PackItem(new HarmScroll());
-					break;
-				case 12:
-					PackItem(new MagicTrapScroll());
-					break;
-				case 13:
-					PackItem(new MagicUnTrapScroll());
-					break;
-				case 14:
-					PackItem(new ProtectionScroll());
-					break;
-				case 15:
-					PackItem(new StrengthScroll());
-					break;
-				case 16:
-					PackItem(new BlessScroll());
-					break;
-				case 17:
-					PackItem(new FireballScroll());
-					break;
-				case 18:
-					PackItem(new MagicLockScroll());
-					break;
-				case 19:
-					PackItem(new PoisonScroll());
-					break;
-				case 20:
-					PackItem(new TelekinisisScroll());
-					break;
-				case 21:
-					PackItem(new TeleportScroll());
-					break;
-				case 22:
-					PackItem(new UnlockScroll());
-					break;
-				case 23:
-					PackItem(new WallOfStoneScroll());
-					break;
-			}
-		}
-
-		private static Item NecroHue(Item item)
-		{
-			item.Hue = 0x2C3;
-
-			return item;
 		}
 
 		private static void AddSkillItems(SkillName skill, Mobile m)

@@ -1280,7 +1280,7 @@ namespace Server.Mobiles
                     {
                         mount.Rider = from;
                     }
-                }, 
+                },
                 (EtherealMount)from.Mount);
             }
 
@@ -2406,7 +2406,7 @@ namespace Server.Mobiles
 
 				if (Core.HS)
 				{
-					list.Add(new CallbackEntry(RefuseTrades ? 1154112 : 1154113, ToggleTrades)); // Allow Trades / Refuse Trades				
+					list.Add(new CallbackEntry(RefuseTrades ? 1154112 : 1154113, ToggleTrades)); // Allow Trades / Refuse Trades
 				}
 
 				if (m_JusticeProtectors.Count > 0)
@@ -3348,7 +3348,7 @@ namespace Server.Mobiles
 				}
 				else if (to.Backpack == null || !to.Backpack.CheckHold(to, item, false, checkItems, plusItems, plusWeight))
 				{
-					msgNum = 1004039; // The recipient of this trade would not be able to carry 
+					msgNum = 1004039; // The recipient of this trade would not be able to carry
 				}
 				else
 				{
@@ -3518,7 +3518,7 @@ namespace Server.Mobiles
 			}
 
             BaseGump.CheckCloseGumps(this);
-            
+
 			DesignContext context = m_DesignContext;
 
 			if (context == null || m_NoRecursion)
@@ -4011,7 +4011,7 @@ namespace Server.Mobiles
 			Faction.HandleDeath(this, killer);
 
 			Guilds.Guild.HandleDeath(this, killer);
-            
+
             if (m_BuffTable != null)
 			{
 				var list = new List<BuffInfo>();
@@ -4395,7 +4395,7 @@ namespace Server.Mobiles
         public override int Luck { get { return AosAttributes.GetValue(this, AosAttribute.Luck) + TenthAnniversarySculpture.GetLuckBonus(this); } }
 
         public int RealLuck
-		{ 
+		{
             get
             {
                 int facetBonus = !Siege.SiegeShard && this.Map == Map.Felucca ? RandomItemGenerator.FeluccaLuckBonus : 0;
@@ -4878,7 +4878,7 @@ namespace Server.Mobiles
 			#endregion
 
 			// Professions weren't verified on 1.0 RC0
-			if (!CharacterCreation.VerifyProfession(m_Profession))
+			if (!CharacterCreation.VerifyProfession((ProfessionName) m_Profession))
 			{
 				m_Profession = 0;
 			}
@@ -4975,7 +4975,7 @@ namespace Server.Mobiles
             writer.Write((int)m_ExtendedFlags);
 
             writer.Write(RewardStableSlots);
-			
+
 			if (_BlessedItem != null && _BlessedItem.RootParent != this)
 			{
 				_BlessedItem = null;
@@ -5511,7 +5511,7 @@ namespace Server.Mobiles
 		#region Factions
 		public PlayerState FactionPlayerState { get; set; }
 		#endregion
-        
+
 		#region Quests
 		private QuestSystem m_Quest;
 		private List<QuestRestartInfo> m_DoneQuests;
@@ -5630,7 +5630,7 @@ namespace Server.Mobiles
 			{
 				m_SelectedTitle = num;
 
-                if (!silent) 
+                if (!silent)
 					SendLocalizedMessage(1074010); // You elect to hide your Reward Title.
 			}
             else if (num < m_RewardTitles.Count && num >= -1)
@@ -5744,7 +5744,7 @@ namespace Server.Mobiles
 		}
 
         public override void AddNameProperties(ObjectPropertyList list)
-        {           
+        {
             string prefix = "";
 
             if (ShowFameTitle && Fame >= 10000)

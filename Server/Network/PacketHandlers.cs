@@ -1748,7 +1748,7 @@ namespace Server.Network
             /* 640x480    5     18   15
              * 800x600    5     18   18
              * 1024x768   5     24   24
-             * 1152x864   5     24   24 
+             * 1152x864   5     24   24
              * 1280x720   5     24   24
              */
 
@@ -2199,7 +2199,7 @@ namespace Server.Network
 							using (var e = menu.Entries[index])
 							{
 								int range = e.Range;
-	
+
 								if (range == -1)
 								{
 									if (user.NetState != null && user.NetState.UpdateRange > 0)
@@ -2505,7 +2505,7 @@ namespace Server.Network
 					}
 
 					NetState.ProcessDisposedQueue();
-					
+
 					state.Flags = (ClientFlags)flags;
 
 					state.Mobile = m;
@@ -2692,7 +2692,8 @@ namespace Server.Network
 					info[cityIndex],
 					new SkillNameValue[3]
 					{
-						new SkillNameValue((SkillName)is1, vs1), new SkillNameValue((SkillName)is2, vs2),
+						new SkillNameValue((SkillName)is1, vs1),
+                        new SkillNameValue((SkillName)is2, vs2),
 						new SkillNameValue((SkillName)is3, vs3),
 					},
 					shirtHue,
@@ -2701,7 +2702,7 @@ namespace Server.Network
 					hairHue,
 					hairValf,
 					hairHuef,
-					prof,
+					(ProfessionName) prof,
 					race);
 
 				if (state.Version == null)
@@ -2833,8 +2834,10 @@ namespace Server.Network
 					info[cityIndex],
 					new SkillNameValue[4]
 					{
-						new SkillNameValue((SkillName)is1, vs1), new SkillNameValue((SkillName)is2, vs2),
-						new SkillNameValue((SkillName)is3, vs3), new SkillNameValue((SkillName)is4, vs4),
+						new SkillNameValue((SkillName)is1, vs1),
+                        new SkillNameValue((SkillName)is2, vs2),
+						new SkillNameValue((SkillName)is3, vs3),
+                        new SkillNameValue((SkillName)is4, vs4),
 					},
 					shirtHue,
 					pantsHue,
@@ -2842,7 +2845,7 @@ namespace Server.Network
 					hairHue,
 					hairValf,
 					hairHuef,
-					prof,
+					(ProfessionName) prof,
 					race);
 
 				if (state.Version == null)
@@ -2996,7 +2999,7 @@ namespace Server.Network
 				state.Dispose();
 				return;
 			}
-			
+
 			if (state.AuthID == 0 && authID != state.Seed)
 			{
 				Utility.PushColor(ConsoleColor.Red);
@@ -3258,9 +3261,14 @@ namespace Server.Network
                 }
 
                 CharacterCreatedEventArgs args = new CharacterCreatedEventArgs(
-                    state, a,
-                    name, female, hue,
-                    str, dex, intel,
+                    state,
+                    a,
+                    name,
+                    female,
+                    hue,
+                    str,
+                    dex,
+                    intel,
                     info[cityIndex],
                     new SkillNameValue[4]
                     {
@@ -3269,11 +3277,16 @@ namespace Server.Network
                         new SkillNameValue( (SkillName)is3, vs3 ),
                         new SkillNameValue( (SkillName)is4, vs4 ),
                     },
-                    shirtHue, pantsHue,
-                    hairID, hairColor,
-                    beardID, beardColor,
-                    profession, race,
-                    faceID, faceColor
+                    shirtHue,
+                    pantsHue,
+                    hairID,
+                    hairColor,
+                    beardID,
+                    beardColor,
+                    (ProfessionName) profession,
+                    race,
+                    faceID,
+                    faceColor
                     );
 
                 if (state.Version == null)
