@@ -57,39 +57,24 @@ namespace Server.Misc
 			PackItem(new RedBook("a book", m.Name, 20, true));
 			PackItem(new Gold(1000)); // Starting gold can be customized here
 			PackItem(new Candle());
-
-			if (m.Race != Race.Gargoyle)
-				PackItem(new Dagger());
-			else
-				PackItem(new GargishDagger());
+            PackItem(new Dagger());
 		}
 
 		private static void AddShirt(Mobile m, int shirtHue)
 		{
 			var hue = Utility.ClipDyedHue(shirtHue & 0x3FFF);
 
-			if (m.Race == Race.Elf)
+			switch (Utility.Random(3))
 			{
-				EquipItem(new ElvenShirt(hue), true);
-			}
-			else if (m.Race == Race.Human)
-			{
-				switch (Utility.Random(3))
-				{
-					case 0:
-						EquipItem(new Shirt(hue), true);
-						break;
-					case 1:
-						EquipItem(new FancyShirt(hue), true);
-						break;
-					case 2:
-						EquipItem(new Doublet(hue), true);
-						break;
-				}
-			}
-			else if (m.Race == Race.Gargoyle)
-			{
-				EquipItem(new GargishClothChestArmor(hue));
+				case 0:
+					EquipItem(new Shirt(hue), true);
+					break;
+				case 1:
+					EquipItem(new FancyShirt(hue), true);
+					break;
+				case 2:
+					EquipItem(new Doublet(hue), true);
+					break;
 			}
 		}
 
@@ -97,49 +82,35 @@ namespace Server.Misc
 		{
 			var hue = Utility.ClipDyedHue(pantsHue & 0x3FFF);
 
-			if (m.Race == Race.Elf)
+			if (m.Female)
 			{
-				EquipItem(new ElvenPants(hue), true);
-			}
-			else if (m.Race == Race.Human)
-			{
-				if (m.Female)
+				switch (Utility.Random(2))
 				{
-					switch (Utility.Random(2))
-					{
-						case 0:
-							EquipItem(new Skirt(hue), true);
-							break;
-						case 1:
-							EquipItem(new Kilt(hue), true);
-							break;
-					}
+					case 0:
+						EquipItem(new Skirt(hue), true);
+						break;
+					case 1:
+						EquipItem(new Kilt(hue), true);
+						break;
 				}
-				else
-				{
-					switch (Utility.Random(2))
-					{
-						case 0:
-							EquipItem(new LongPants(hue), true);
-							break;
-						case 1:
-							EquipItem(new ShortPants(hue), true);
-							break;
-					}
-				}
-			}
-			else if (m.Race == Race.Gargoyle)
+
+                return;
+            }
+
+			switch (Utility.Random(2))
 			{
-				EquipItem(new GargishClothKiltArmor(hue));
+				case 0:
+					EquipItem(new LongPants(hue), true);
+					break;
+				case 1:
+					EquipItem(new ShortPants(hue), true);
+					break;
 			}
 		}
 
 		private static void AddShoes(Mobile m)
 		{
-			if (m.Race == Race.Elf)
-				EquipItem(new ElvenBoots(), true);
-			else if (m.Race == Race.Human)
-				EquipItem(new Shoes(Utility.RandomYellowHue()), true);
+			EquipItem(new Shoes(Utility.RandomYellowHue()), true);
 		}
 
 		private static Mobile CreateMobile(Account a)
@@ -184,10 +155,7 @@ namespace Server.Misc
 			newChar.Female = args.Female;
 			//newChar.Body = newChar.Female ? 0x191 : 0x190;
 
-			if (Core.Expansion >= args.Race.RequiredExpansion)
-				newChar.Race = args.Race; //Sets body
-			else
-				newChar.Race = Race.DefaultRace;
+            newChar.Race = Race.DefaultRace;
 
 			newChar.Hue = args.Hue | 0x8000;
 
@@ -488,22 +456,12 @@ namespace Server.Misc
 			}
 
 			var addSkillItems = true;
-			var elf = (m.Race == Race.Elf);
-			var human = (m.Race == Race.Human);
-			var gargoyle = (m.Race == Race.Gargoyle);
 
 			switch (prof)
 			{
 				case ProfessionName.Fighter:
 				{
-					if (elf)
-						EquipItem(new LeafChest());
-					else if (human)
-						EquipItem(new LeatherChest());
-					else if (gargoyle)
-					{
-						EquipItem(new GargishLeatherChest());
-					}
+                    EquipItem(new LeatherChest());
 
 					break;
 				}
@@ -590,10 +548,6 @@ namespace Server.Misc
 
 		private static void AddSkillItems(SkillName skill, Mobile m)
 		{
-			var elf = (m.Race == Race.Elf);
-			var human = (m.Race == Race.Human);
-			var gargoyle = (m.Race == Race.Gargoyle);
-
 			switch (skill)
 			{
 				case SkillName.Alchemy:
@@ -601,19 +555,9 @@ namespace Server.Misc
 					PackItem(new Bottle(4));
 					PackItem(new MortarPestle());
 
-					var hue = Utility.RandomPinkHue();
+                    var hue = Utility.RandomPinkHue();
+                    EquipItem(new Robe(hue));
 
-					if (elf)
-					{
-						if (m.Female)
-							EquipItem(new FemaleElvenRobe(hue));
-						else
-							EquipItem(new MaleElvenRobe(hue));
-					}
-					else
-					{
-						EquipItem(new Robe(Utility.RandomPinkHue()));
-					}
 					break;
 				}
 				case SkillName.Anatomy:
@@ -621,109 +565,35 @@ namespace Server.Misc
 					PackItem(new Bandage(3));
 
 					var hue = Utility.RandomYellowHue();
+                    EquipItem(new Robe(hue));
 
-					if (elf)
-					{
-						if (m.Female)
-							EquipItem(new FemaleElvenRobe(hue));
-						else
-							EquipItem(new MaleElvenRobe(hue));
-					}
-					else
-					{
-						EquipItem(new Robe(hue));
-					}
 					break;
 				}
 				case SkillName.AnimalLore:
 				{
+                    EquipItem(new ShepherdsCrook());
+
 					var hue = Utility.RandomBlueHue();
+					EquipItem(new Robe(hue));
 
-					if (elf)
-					{
-						EquipItem(new WildStaff());
-
-						if (m.Female)
-							EquipItem(new FemaleElvenRobe(hue));
-						else
-							EquipItem(new MaleElvenRobe(hue));
-					}
-					else
-					{
-						EquipItem(new ShepherdsCrook());
-						EquipItem(new Robe(hue));
-					}
 					break;
 				}
 				case SkillName.Archery:
 				{
 					PackItem(new Arrow(25));
-
-					if (elf)
-						EquipItem(new ElvenCompositeLongbow());
-					else if (human)
-						EquipItem(new Bow());
+                    EquipItem(new Bow());
 
 					break;
 				}
 				case SkillName.ArmsLore:
 				{
-					if (elf)
-					{
-						switch (Utility.Random(3))
-						{
-							case 0:
-								EquipItem(new Leafblade());
-								break;
-							case 1:
-								EquipItem(new RuneBlade());
-								break;
-							case 2:
-								EquipItem(new DiamondMace());
-								break;
-						}
-					}
-					else if (human)
-					{
-						switch (Utility.Random(3))
-						{
-							case 0:
-								EquipItem(new Kryss());
-								break;
-							case 1:
-								EquipItem(new Katana());
-								break;
-							case 2:
-								EquipItem(new Club());
-								break;
-						}
-					}
-					else if (gargoyle)
-					{
-						switch (Utility.Random(3))
-						{
-							case 0:
-								EquipItem(new BloodBlade());
-								break;
-							case 1:
-								EquipItem(new GlassSword());
-								break;
-							case 2:
-								EquipItem(new DiscMace());
-								break;
-						}
-					}
+					EquipItem(new Club());
 
 					break;
 				}
 				case SkillName.Begging:
 				{
-					if (elf)
-						EquipItem(new WildStaff());
-					else if (human)
-						EquipItem(new GnarledStaff());
-					else if (gargoyle)
-						EquipItem(new SerpentStoneStaff());
+                    EquipItem(new GnarledStaff());
 
 					break;
 				}
@@ -733,11 +603,7 @@ namespace Server.Misc
 					PackItem(new Pickaxe());
 					PackItem(new Pickaxe());
 					PackItem(new IronIngot(50));
-
-					if (human || elf)
-					{
-						EquipItem(new HalfApron(Utility.RandomYellowHue()));
-					}
+                    EquipItem(new HalfApron(Utility.RandomYellowHue()));
 
 					break;
 				}
@@ -746,23 +612,21 @@ namespace Server.Misc
 					PackItem(new Board(14));
 					PackItem(new Feather(5));
 					PackItem(new Shaft(5));
+
 					break;
 				}
 				case SkillName.Camping:
 				{
 					PackItem(new Bedroll());
 					PackItem(new Kindling(5));
+
 					break;
 				}
 				case SkillName.Carpentry:
 				{
 					PackItem(new Board(10));
 					PackItem(new Saw());
-
-					if (human || elf)
-					{
-						EquipItem(new HalfApron(Utility.RandomYellowHue()));
-					}
+                    EquipItem(new HalfApron(Utility.RandomYellowHue()));
 
 					break;
 				}
@@ -785,27 +649,9 @@ namespace Server.Misc
 					PackItem(new Pitcher(BeverageType.Water));
 					break;
 				}
-				case SkillName.DetectHidden:
-				{
-					if (human || elf)
-						EquipItem(new Cloak(0x455));
-
-					break;
-				}
 				case SkillName.Discordance:
 				{
 					PackInstrument();
-					break;
-				}
-				case SkillName.Fencing:
-				{
-					if (elf)
-						EquipItem(new Leafblade());
-					else if (human)
-						EquipItem(new Kryss());
-					else if (gargoyle)
-						EquipItem(new BloodBlade());
-
 					break;
 				}
 				case SkillName.Fishing:
@@ -813,17 +659,7 @@ namespace Server.Misc
 					EquipItem(new FishingPole());
 
 					var hue = Utility.RandomYellowHue();
-
-					if (elf)
-					{
-						Item i = new Circlet();
-						i.Hue = hue;
-						EquipItem(i);
-					}
-					else if (human)
-					{
-						EquipItem(new FloppyHat(hue));
-					}
+                    EquipItem(new FloppyHat(hue));
 
 					break;
 				}
@@ -835,17 +671,7 @@ namespace Server.Misc
 				}
 				case SkillName.Herding:
 				{
-					if (elf)
-						EquipItem(new WildStaff());
-					else
-						EquipItem(new ShepherdsCrook());
-
-					break;
-				}
-				case SkillName.Hiding:
-				{
-					if (human || elf)
-						EquipItem(new Cloak(0x455));
+                    EquipItem(new ShepherdsCrook());
 
 					break;
 				}
@@ -853,16 +679,12 @@ namespace Server.Misc
 				{
 					PackItem(new BlankScroll(2));
 					PackItem(new BlueBook());
+
 					break;
 				}
 				case SkillName.ItemID:
 				{
-					if (elf)
-						EquipItem(new WildStaff());
-					else if (human)
-						EquipItem(new GnarledStaff());
-					else if (gargoyle)
-						EquipItem(new SerpentStoneStaff());
+                    EquipItem(new GnarledStaff());
 
 					break;
 				}
@@ -873,70 +695,56 @@ namespace Server.Misc
 				}
 				case SkillName.Lumberjacking:
 				{
-					if (human || elf)
-						EquipItem(new Hatchet());
-					else if (gargoyle)
-						EquipItem(new DualShortAxes());
+                    EquipItem(new Hatchet());
 
 					break;
 				}
 				case SkillName.Macing:
 				{
-					if (elf)
-						EquipItem(new DiamondMace());
-					else if (human)
-						EquipItem(new Club());
-					else if (gargoyle)
-						EquipItem(new DiscMace());
+                    EquipItem(new Club());
 
 					break;
 				}
 				case SkillName.Mining:
 				{
 					PackItem(new Pickaxe());
+
 					break;
 				}
 				case SkillName.Musicianship:
 				{
 					PackInstrument();
+
 					break;
 				}
 				case SkillName.Parry:
 				{
-					if (human || elf)
-						EquipItem(new WoodenShield());
-					else if (gargoyle)
-						EquipItem(new GargishWoodenShield());
+                    EquipItem(new WoodenShield());
 
 					break;
 				}
 				case SkillName.Peacemaking:
 				{
 					PackInstrument();
+
 					break;
 				}
 				case SkillName.Poisoning:
 				{
 					PackItem(new LesserPoisonPotion());
 					PackItem(new LesserPoisonPotion());
+
 					break;
 				}
 				case SkillName.Provocation:
 				{
 					PackInstrument();
+
 					break;
 				}
 				case SkillName.Snooping:
 				{
 					PackItem(new Lockpick(20));
-					break;
-				}
-				case SkillName.SpiritSpeak:
-				{
-					if (human || elf)
-					{
-						EquipItem(new Cloak(0x455));
-					}
 
 					break;
 				}
@@ -947,23 +755,7 @@ namespace Server.Misc
 				}
 				case SkillName.Swords:
 				{
-					if (elf)
-						EquipItem(new RuneBlade());
-					else if (human)
-						EquipItem(new Katana());
-					else if (gargoyle)
-						EquipItem(new GlassSword());
-
-					break;
-				}
-				case SkillName.Tactics:
-				{
-					if (elf)
-						EquipItem(new RuneBlade());
-					else if (human)
-						EquipItem(new Katana());
-					else if (gargoyle)
-						EquipItem(new GlassSword());
+                    EquipItem(new Katana());
 
 					break;
 				}
@@ -971,6 +763,7 @@ namespace Server.Misc
 				{
 					PackItem(new BoltOfCloth());
 					PackItem(new SewingKit());
+
 					break;
 				}
 				case SkillName.Tinkering:
@@ -981,64 +774,14 @@ namespace Server.Misc
 					PackItem(new AxleGears());
 					PackItem(new Springs());
 					PackItem(new ClockFrame());
-					break;
-				}
-				case SkillName.Tracking:
-				{
-					if (human || elf)
-					{
-						if (m_Mobile != null)
-						{
-							var shoes = m_Mobile.FindItemOnLayer(Layer.Shoes);
-
-							if (shoes != null)
-								shoes.Delete();
-						}
-
-						var hue = Utility.RandomYellowHue();
-
-						if (elf)
-							EquipItem(new ElvenBoots(hue));
-						else
-							EquipItem(new Boots(hue));
-
-						EquipItem(new SkinningKnife());
-					}
-					else if (gargoyle)
-						PackItem(new SkinningKnife());
 
 					break;
 				}
 				case SkillName.Veterinary:
 				{
 					PackItem(new Bandage(5));
-					PackItem(new Scissors());
-					break;
-				}
-				case SkillName.Wrestling:
-				{
-					if (elf)
-						EquipItem(new LeafGloves());
-					else if (human)
-						EquipItem(new LeatherGloves());
-					else if (gargoyle)
-					{
-						// Why not give them arm armor?
-						EquipItem(new GargishLeatherArms());
-					}
+                    PackItem(new Scissors());
 
-					break;
-				}
-				case SkillName.Throwing:
-				{
-					if (gargoyle)
-						EquipItem(new Boomerang());
-
-					break;
-				}
-				case SkillName.Mysticism:
-				{
-					PackItem(new MysticBook((ulong)0xAB));
 					break;
 				}
 			}
