@@ -205,17 +205,17 @@ namespace Server.Misc
 			if (newChar is PlayerMobile)
 			{
 				var pm = (PlayerMobile)newChar;
-				
+
 				pm.AutoRenewInsurance = true;
 
 				var skillcap = Config.Get("PlayerCaps.SkillCap", 1000.0d) / 10;
-				
+
 				if (skillcap != 100.0)
 				{
 					for (var i = 0; i < Enum.GetNames(typeof(SkillName)).Length; ++i)
 						pm.Skills[i].Cap = skillcap;
 				}
-				
+
 				pm.Profession = args.Profession;
 
 				if (pm.IsPlayer() && pm.Account.Young && !Siege.SiegeShard)
@@ -226,7 +226,7 @@ namespace Server.Misc
 
 			AddBackpack(newChar);
 
-            SetStats(newChar, state, args.Profession, args.Str, args.Dex, args.Int);
+            SetStats(newChar, args.Profession, args.Str, args.Dex, args.Int);
 			SetSkills(newChar, args.Skills, args.Profession);
 
 			var race = newChar.Race;
@@ -272,7 +272,7 @@ namespace Server.Misc
 				{
 					Owner = newChar
 				};
-				
+
 				newChar.BankBox.DropItem(ticket);
 			}
 
@@ -339,9 +339,9 @@ namespace Server.Misc
 				stat = max;
 		}
 
-		private static void SetStats(Mobile m, NetState state, int str, int dex, int intel)
+		private static void SetStats(Mobile m, int str, int dex, int intel)
 		{
-			var max = state.NewCharacterCreation ? 90 : 80;
+			const int max = 70;
 
 			FixStats(ref str, ref dex, ref intel, max);
 
@@ -383,65 +383,52 @@ namespace Server.Misc
 				}
 			}
 
-			return (total == 100 || total == 120);
+			return total == 60;
 		}
 
-        private static void SetStats(Mobile m, NetState state, int prof, int str, int dex, int intel)
+        private static void SetStats(Mobile m, int prof, int str, int dex, int intel)
         {
+            // TODO: update stats
             switch (prof)
             {
-                case 1: // Warrior
+                case 1: // Fighter
                     {
-                        str = 45;
+                        str = 35;
+                        dex = 25;
+                        intel = 10;
+                        break;
+                    }
+                case 2: // Ruffian
+                    {
+                        str = 25;
                         dex = 35;
                         intel = 10;
                         break;
                     }
-                case 2: // Magician
+                case 3: // Hunter
                     {
-                        str = 25;
-                        dex = 20;
-                        intel = 45;
+                        str = 20;
+                        dex = 35;
+                        intel = 15;
                         break;
                     }
-                case 3: // Blacksmith
+                case 4: // Student
                     {
-                        str = 60;
+                        str = 10;
+                        dex = 25;
+                        intel = 35;
+                        break;
+                    }
+                case 5: // Blacksmith
+                    {
+                        str = 40;
                         dex = 15;
                         intel = 15;
                         break;
                     }
-                case 4: // Necromancer
-                    {
-                        str = 25;
-                        dex = 20;
-                        intel = 45;
-                        break;
-                    }
-                case 5: // Paladin
-                    {
-                        str = 45;
-                        dex = 20;
-                        intel = 25;
-                        break;
-                    }
-                case 6: //Samurai
-                    {
-                        str = 40;
-                        dex = 30;
-                        intel = 20;
-                        break;
-                    }
-                case 7: //Ninja
-                    {
-                        str = 40;
-                        dex = 30;
-                        intel = 20;
-                        break;
-                    }
                 default:
                     {
-                        SetStats(m, state, str, dex, intel);
+                        SetStats(m, str, dex, intel);
 
                         return;
                     }
@@ -454,73 +441,52 @@ namespace Server.Misc
 		{
 			switch (prof)
 			{
-				case 1: // Warrior
+				case 1: // Fighter
 				{
 					skills = new[]
 					{
-						new SkillNameValue(SkillName.Anatomy, 30), new SkillNameValue(SkillName.Healing, 30),
-						new SkillNameValue(SkillName.Swords, 30), new SkillNameValue(SkillName.Tactics, 30)
+						new SkillNameValue(SkillName.Anatomy, 15), new SkillNameValue(SkillName.Healing, 15),
+						new SkillNameValue(SkillName.Swords, 15), new SkillNameValue(SkillName.Tactics, 15)
 					};
 
 					break;
 				}
-				case 2: // Magician
+                case 2: // Ruffian
+                {
+                    skills = new[]
+                    {
+                        new SkillNameValue(SkillName.Begging, 15), new SkillNameValue(SkillName.Hiding, 15),
+                        new SkillNameValue(SkillName.Fencing, 15), new SkillNameValue(SkillName.Stealth, 15)
+                    };
+                    break;
+                }
+                case 3: // Hunter
+                {
+                    skills = new[]
+                    {
+                        new SkillNameValue(SkillName.Tracking, 15), new SkillNameValue(SkillName.Camping, 15),
+                        new SkillNameValue(SkillName.Archery, 15), new SkillNameValue(SkillName.DetectHidden, 15)
+                    };
+                    break;
+                }
+				case 4: // Student
 				{
 					skills = new[]
 					{
-						new SkillNameValue(SkillName.EvalInt, 30), new SkillNameValue(SkillName.Wrestling, 30),
-						new SkillNameValue(SkillName.Magery, 30), new SkillNameValue(SkillName.Meditation, 30)
+						new SkillNameValue(SkillName.EvalInt, 15), new SkillNameValue(SkillName.Wrestling, 15),
+						new SkillNameValue(SkillName.AnimalLore, 15), new SkillNameValue(SkillName.Meditation, 15)
 					};
 
 					break;
 				}
-				case 3: // Blacksmith
+				case 5: // Blacksmith
 				{
 					skills = new[]
 					{
-						new SkillNameValue(SkillName.Mining, 30), new SkillNameValue(SkillName.ArmsLore, 30),
-						new SkillNameValue(SkillName.Blacksmith, 30), new SkillNameValue(SkillName.Tinkering, 30)
+						new SkillNameValue(SkillName.Mining, 15), new SkillNameValue(SkillName.ArmsLore, 15),
+						new SkillNameValue(SkillName.Blacksmith, 15), new SkillNameValue(SkillName.Tinkering, 15)
 					};
 
-					break;
-				}
-				case 4: // Necromancer
-				{
-					skills = new[]
-					{
-						new SkillNameValue(SkillName.Necromancy, 30),
-						new SkillNameValue(SkillName.SpiritSpeak, 30), new SkillNameValue(SkillName.Swords, 30),
-						new SkillNameValue(SkillName.Meditation, 20)
-					};
-
-					break;
-				}
-				case 5: // Paladin
-				{
-					skills = new[]
-					{
-						new SkillNameValue(SkillName.Chivalry, 30), new SkillNameValue(SkillName.Swords, 30),
-						new SkillNameValue(SkillName.Focus, 30), new SkillNameValue(SkillName.Tactics, 30)
-					};
-
-					break;
-				}
-				case 6: //Samurai
-				{
-					skills = new[]
-					{
-						new SkillNameValue(SkillName.Bushido, 30), new SkillNameValue(SkillName.Swords, 30),
-						new SkillNameValue(SkillName.Anatomy, 30), new SkillNameValue(SkillName.Healing, 30)
-					};
-					break;
-				}
-				case 7: //Ninja
-				{
-					skills = new[]
-					{
-						new SkillNameValue(SkillName.Ninjitsu, 30), new SkillNameValue(SkillName.Hiding, 30),
-						new SkillNameValue(SkillName.Fencing, 30), new SkillNameValue(SkillName.Stealth, 30)
-					};
 					break;
 				}
 				default:
@@ -552,176 +518,6 @@ namespace Server.Misc
 
 					break;
 				}
-				case 4: // Necromancer
-				{
-					Container regs = new BagOfNecroReagents(50);
-
-					if (!Core.AOS)
-					{
-						foreach (var item in regs.Items)
-							item.LootType = LootType.Newbied;
-					}
-
-					PackItem(regs);
-
-					regs.LootType = LootType.Regular;
-
-					if (elf || human)
-						EquipItem(new BoneHelm());
-
-					if (elf)
-					{
-						EquipItem(new ElvenMachete());
-						EquipItem(NecroHue(new LeafChest()));
-						EquipItem(NecroHue(new LeafArms()));
-						EquipItem(NecroHue(new LeafGloves()));
-						EquipItem(NecroHue(new LeafGorget()));
-						EquipItem(NecroHue(new LeafGorget()));
-						EquipItem(NecroHue(new ElvenPants())); //TODO: Verify the pants
-						EquipItem(new ElvenBoots());
-					}
-					else if (human)
-					{
-						EquipItem(new BoneHarvester());
-						EquipItem(NecroHue(new LeatherChest()));
-						EquipItem(NecroHue(new LeatherArms()));
-						EquipItem(NecroHue(new LeatherGloves()));
-						EquipItem(NecroHue(new LeatherGorget()));
-						EquipItem(NecroHue(new LeatherLegs()));
-						EquipItem(NecroHue(new Skirt()));
-						EquipItem(new Sandals(0x8FD));
-					}
-					else if (gargoyle)
-					{
-						EquipItem(new GlassSword());
-						EquipItem(NecroHue(new GargishLeatherChest()));
-						EquipItem(NecroHue(new GargishLeatherArms()));
-						EquipItem(NecroHue(new GargishLeatherLegs()));
-						EquipItem(NecroHue(new GargishLeatherKilt()));
-					}
-
-					Spellbook
-						book = new NecromancerSpellbook(
-							(ulong)0x8981); // animate dead, evil omen, pain spike, summon familiar, wraith form
-
-					PackItem(book);
-
-					book.LootType = LootType.Blessed;
-
-					addSkillItems = false;
-					break;
-				}
-				case 5: // Paladin
-				{
-					if (elf)
-					{
-						EquipItem(new ElvenMachete());
-						EquipItem(new WingedHelm());
-						EquipItem(new LeafGorget());
-						EquipItem(new LeafArms());
-						EquipItem(new LeafChest());
-						EquipItem(new LeafLegs());
-						EquipItem(new ElvenBoots()); //Verify hue
-					}
-					else if (human)
-					{
-						EquipItem(new Broadsword());
-						EquipItem(new Helmet());
-						EquipItem(new PlateGorget());
-						EquipItem(new RingmailArms());
-						EquipItem(new RingmailChest());
-						EquipItem(new RingmailLegs());
-						EquipItem(new ThighBoots(0x748));
-						EquipItem(new Cloak(0xCF));
-						EquipItem(new BodySash(0xCF));
-					}
-					else if (gargoyle)
-					{
-						EquipItem(new DreadSword());
-						EquipItem(new GargishPlateChest());
-						EquipItem(new GargishPlateArms());
-						EquipItem(new GargishPlateLegs());
-						EquipItem(new GargishPlateKilt());
-					}
-
-					Spellbook book = new BookOfChivalry((ulong)0x3FF);
-					book.LootType = LootType.Blessed;
-					PackItem(book);
-
-					addSkillItems = false;
-					break;
-				}
-
-				case 6: // Samurai
-				{
-					if (elf || human)
-					{
-						EquipItem(new HakamaShita(0x2C3));
-						EquipItem(new Hakama(0x2C3));
-						EquipItem(new SamuraiTabi(0x2C3));
-						EquipItem(new TattsukeHakama(0x22D));
-						EquipItem(new Bokuto());
-
-						if (elf)
-							EquipItem(new RavenHelm());
-						else
-							EquipItem(new LeatherJingasa());
-					}
-					else if (gargoyle)
-					{
-						EquipItem(new GlassSword());
-						EquipItem(new GargishPlateChest());
-						EquipItem(new GargishPlateArms());
-						EquipItem(new GargishPlateLegs());
-						EquipItem(new GargishPlateKilt());
-					}
-
-					PackItem(new Scissors());
-					PackItem(new Bandage(50));
-
-					Spellbook book = new BookOfBushido();
-					PackItem(book);
-
-					addSkillItems = false;
-					break;
-				}
-				case 7: // Ninja
-				{
-					var hues = new[] {0x1A8, 0xEC, 0x99, 0x90, 0xB5, 0x336, 0x89};
-					//TODO: Verify that's ALL the hues for that above.
-
-					if (elf || human)
-					{
-						EquipItem(new Kasa());
-						EquipItem(new TattsukeHakama(hues[Utility.Random(hues.Length)]));
-						EquipItem(new HakamaShita(0x2C3));
-						EquipItem(new NinjaTabi(0x2C3));
-
-						if (elf)
-							EquipItem(new AssassinSpike());
-						else
-							EquipItem(new Tekagi());
-					}
-					else if (gargoyle)
-					{
-						EquipItem(new GargishDagger());
-
-						var hue = hues[Utility.Random(hues.Length)];
-
-						EquipItem(new GargishClothChestArmor(hue));
-						EquipItem(new GargishClothArmsArmor(hue));
-						EquipItem(new GargishClothLegsArmor(hue));
-						EquipItem(new GargishClothKiltArmor(hue));
-					}
-
-					PackItem(new SmokeBomb());
-
-					Spellbook book = new BookOfNinjitsu();
-					PackItem(book);
-
-					addSkillItems = false;
-					break;
-				}
 			}
 
 			for (var i = 0; i < skills.Length; ++i)
@@ -737,8 +533,7 @@ namespace Server.Misc
 					{
 						skill.BaseFixedPoint = snv.Value * 10;
 
-						if (addSkillItems)
-							AddSkillItems(snv.Name, m);
+                        AddSkillItems(snv.Name, m);
 					}
 				}
 			}
@@ -1042,17 +837,6 @@ namespace Server.Misc
 
 					break;
 				}
-				case SkillName.Bushido:
-				{
-					if (human || elf)
-					{
-						EquipItem(new Hakama());
-						EquipItem(new Kasa());
-					}
-
-					EquipItem(new BookOfBushido());
-					break;
-				}
 				case SkillName.Fletching:
 				{
 					PackItem(new Board(14));
@@ -1095,13 +879,6 @@ namespace Server.Misc
 					PackItem(new RawFishSteak());
 					PackItem(new SackFlour());
 					PackItem(new Pitcher(BeverageType.Water));
-					break;
-				}
-				case SkillName.Chivalry:
-				{
-					if (Core.ML)
-						PackItem(new BookOfChivalry((ulong)0x3FF));
-
 					break;
 				}
 				case SkillName.DetectHidden:
@@ -1210,47 +987,6 @@ namespace Server.Misc
 
 					break;
 				}
-				case SkillName.Magery:
-				{
-					var regs = new BagOfReagents(50);
-
-					if (!Core.AOS)
-					{
-						foreach (var item in regs.Items)
-							item.LootType = LootType.Newbied;
-					}
-
-					PackItem(regs);
-
-					regs.LootType = LootType.Regular;
-
-					PackScroll(0);
-					PackScroll(1);
-					PackScroll(2);
-
-					var book = new Spellbook((ulong)0x382A8C38);
-					book.LootType = LootType.Blessed;
-					EquipItem(book);
-
-					if (elf)
-					{
-						EquipItem(new Circlet());
-
-						if (m.Female)
-							EquipItem(new FemaleElvenRobe(Utility.RandomBlueHue()));
-						else
-							EquipItem(new MaleElvenRobe(Utility.RandomBlueHue()));
-					}
-					else
-					{
-						if (human)
-							EquipItem(new WizardsHat());
-
-						EquipItem(new Robe(Utility.RandomBlueHue()));
-					}
-
-					break;
-				}
 				case SkillName.Mining:
 				{
 					PackItem(new Pickaxe());
@@ -1259,37 +995,6 @@ namespace Server.Misc
 				case SkillName.Musicianship:
 				{
 					PackInstrument();
-					break;
-				}
-				case SkillName.Necromancy:
-				{
-					if (Core.ML)
-					{
-						Container regs = new BagOfNecroReagents(50);
-
-						PackItem(regs);
-
-						regs.LootType = LootType.Regular;
-					}
-
-					// RunUO fix
-					Spellbook
-						book = new NecromancerSpellbook(
-							(ulong)0x8981); // animate dead, evil omen, pain spike, summon familiar, wraith form
-					book.LootType = LootType.Blessed;
-					PackItem(book);
-
-					break;
-				}
-				case SkillName.Ninjitsu:
-				{
-					if (human || elf)
-					{
-						EquipItem(new Hakama(0x2C3)); //Only ninjas get the hued one.
-						EquipItem(new Kasa());
-					}
-
-					EquipItem(new BookOfNinjitsu());
 					break;
 				}
 				case SkillName.Parry:
