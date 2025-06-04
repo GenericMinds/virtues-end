@@ -916,7 +916,7 @@ namespace Server
 		public int HairHue { get { return m_HairHue; } }
 		public int BeardID { get { return m_BeardID; } }
 		public int BeardHue { get { return m_BeardHue; } }
-		public int Profession { get; set; }
+		public ProfessionName Profession { get; set; }
 		public Race Race { get { return m_Race; } }
         public int FaceID { get { return m_Face; } }
         public int FaceHue { get { return m_FaceHue; } }
@@ -938,7 +938,7 @@ namespace Server
             int hairHue,
             int beardID,
             int beardHue,
-            int profession,
+            ProfessionName profession,
             Race race)
             : this(state, a, name, female, hue, str, dex, intel, city, skills, shirtHue, pantsHue, hairID, hairHue, beardID, beardHue, profession, race, 0, 0)
         {
@@ -961,7 +961,7 @@ namespace Server
 			int hairHue,
 			int beardID,
 			int beardHue,
-			int profession,
+			ProfessionName profession,
 			Race race,
             int faceID,
             int faceHue)

@@ -25,4 +25,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Ultima\Ultima.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+	  <Compile Include="Professions.cs" />
+	</ItemGroup>
 </Project>
